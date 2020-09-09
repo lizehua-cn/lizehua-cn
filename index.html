@@ -8,14 +8,42 @@
 </head>
 
 <body>
-  <input type="text" id="input">
+  <textarea type="text" id="textarea"></textarea>
+  <p class="time"></p>
+  <div class="msg-box"></div>
 </body>
 <script>
-  var input = document.querySelector('input')
-  input.addEventListener('input', function (event) {
-    console.log('selectionStart', this.selectionStart)
-    console.log('selectionEnd', this.selectionEnd)
+  let isCompositionsting = false
+  let start
+  var textarea = document.querySelector('#textarea')
+  textarea.addEventListener('compositionstart', function () {
+    isCompositionsting = true
   })
+  textarea.addEventListener('compositionend', function () {
+    start = new Date().getTime()
+    setTimeout(() => {
+      isCompositionsting = false
+    }, 200)
+  })
+  textarea.addEventListener('keyup', function (event) {
+    if (event.keyCode === 13) {
+      document.querySelector('.time').innerText = `延迟${new Date().getTime() - start}`
+      if (!isCompositionsting) {
+        let value = this.value.replace(/\s/g, '')
+        createEle(value)
+      }
+    }
+    if (event.keyCode === 32) { //按下空格, 可以enter提交
+      isCompositionsting = false
+    }
+  })
+  function createEle(val) {
+    if (val) {
+      var p = document.createElement('p')
+      p.innerText = `'keyup': ${val}`
+      document.querySelector('.msg-box').appendChild(p)
+    }
+  }
 </script>
 
 </html>
